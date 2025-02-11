@@ -1,5 +1,11 @@
 # Scrolly lemurs!
 
+I encourage you to create the sveltekit project from scratch instead of cloning the repo. The goal is to understand scrollytelling step by step. Reach to me if anything is unclear! 
+
+> [!WARNING]  
+> STILL WIP. There are parts of the code i don't properly explain yet. But it should be enough to get started and study the code.
+
+
 ## Installations
 
 - Create a [sveltekit project](https://svelte.dev/docs/svelte/getting-started): 
