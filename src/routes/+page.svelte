@@ -17,6 +17,7 @@ import Scrolly from "./components/helpers/Scrolly.svelte";
 // This example loads csv data as json using @rollup/plugin-dsv
 // But for some reason Tweening does't work with this data.
 import points from './data/points.csv';
+import data from './data/data.csv';
 
 const xKey = 'myX';
 const yKey = 'myY';
@@ -35,22 +36,9 @@ let xScale = scaleLinear().domain([0, 10]).range([0, width]);
 let yScale = scaleLinear().domain([0, 10]).range([height, 0]);
 
 
-// this is a reactive variable, that will change based on scrolling progression (see below)
-// TODO: how do we make the data reactive when loaded from a file?
-let data = [
-      { foo: 4, bar: 1 },
-      { foo: 6, bar: 7 },
-      { foo: 9, bar: 5 },
-      { foo: 2, bar: 4 },
-      { foo: 8, bar: 2 },
-      { foo: 9, bar: 9 },
-      { foo: 5, bar: 3 },
-      { foo: 3, bar: 8 },
-      { foo: 1, bar: 6 },
-    ];
-
 // Data preparation for scrolly telling
 let value = $state();
+
 // Tween is a helper function to deal with motion associated with scrolling
 const tweenedX = new Tween(data.map((d) => d.foo));
 // This is just one easy example of doing scrollytelling, using same data but slightly different plots
@@ -177,6 +165,12 @@ $effect(() => {
         margin: 20px auto;
     }
 
+    circle {
+        transition: r 300ms ease, opacity 500ms ease,
+        cx 500ms cubic-bezier(0.76, 0, 0.24, 1),
+        cy 500ms cubic-bezier(0.76, 0, 0.24, 1); /* https://easings.net/#easeInOutQuart */
+        cursor: pointer;
+    }
 
     /*
     The wrapper div needs to have an explicit width and height in CSS.

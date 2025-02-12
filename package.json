@@ -35,6 +35,7 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.14.0",
+		"d3-array": "^3.2.4",
 		"d3-scale": "^4.0.2",
 		"drizzle-orm": "^0.38.4",
 		"layercake": "^8.4.2"

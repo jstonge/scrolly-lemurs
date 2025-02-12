@@ -11,6 +11,9 @@ dependencies:
   '@libsql/client':
     specifier: ^0.14.0
     version: 0.14.0
+  d3-array:
+    specifier: ^3.2.4
+    version: 3.2.4
   d3-scale:
     specifier: ^4.0.2
     version: 4.0.2
