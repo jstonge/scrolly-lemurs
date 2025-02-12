@@ -349,7 +349,56 @@ h2 {
 
 < /style>
 ```
-At this point, you should be able to scroll down and see the data changing. But all of this is quite ugly. Lets make it prettier.
+At this point, you should be able to scroll down and see the data changing. One additional modification to get reactivity from data loaded from file. We first create a new `data/data.csv` file with this content:
+
+```csv
+foo,bar
+4,1
+6,7
+9,5
+2,4
+8,2
+9,9
+5,3
+3,8
+1,6
+```
+
+Then we will import it, similar than before
+
+```diff
+<script>
++import data from './data/data.csv';
+- // this is a reactive variable, that will change based on scrolling progression (see below)
+- // TODO: how do we make the data reactive when loaded from a file?
+- let data = [
+-      { foo: 4, bar: 1 },
+-      { foo: 6, bar: 7 },
+-      { foo: 9, bar: 5 },
+-      { foo: 2, bar: 4 },
+-      { foo: 8, bar: 2 },
+-      { foo: 9, bar: 9 },
+-      { foo: 5, bar: 3 },
+-      { foo: 3, bar: 8 },
+-      { foo: 1, bar: 6 },
+-    ];
+</script>
+
+<style>
++ /* In style we will use CSS to manage the transition...  */
++ circle {
++        transition: r 300ms ease, opacity 500ms ease,
++        cx 500ms cubic-bezier(0.76, 0, 0.24, 1),
++        cy 500ms cubic-bezier(0.76, 0, 0.24, 1); /* https://easings.net/#easeInOutQuart */
++        cursor: pointer;
++    }
+</style>
+
+```
+
+
+
+But all of this is quite ugly. Lets make it prettier.
 
 ```svelte
 <style>
