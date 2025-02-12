@@ -1,14 +1,17 @@
 <script>
 import { LayerCake, Svg} from 'layercake'; // Import the LayerCake and Svg components from LayerCake
 import { scaleLinear } from "d3-scale"; // d3 essentially for different scales
-import { Tween } from 'svelte/motion'; // In-house svelte library for dealing with motions
 
 // Pretty plot components copied from LayerCake
 import Scatter from './components/Scatter.svelte';
 import Line from './components/Line.svelte';
 import Area from './components/Area.svelte';
-import AxisX from './components/AxisX.LC.svelte';
-import AxisY from './components/AxisY.LC.svelte';
+import AxisXLC from './components/AxisX.LC.svelte';
+import AxisYLC from './components/AxisY.LC.svelte';
+
+// Custom svelte
+import AxisX from './components/AxisX.svelte';
+import AxisY from './components/AxisY.svelte';
 
 // Scrolly component copied from 
 // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
@@ -93,7 +96,7 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
 <div class="chart-container">
     <LayerCake x={xKey} y={yKey} data={points} {padding}>
         <Svg>
-            <AxisX />
+            <AxisXLC />
             <Scatter fill={'steelblue'} r={5} />
         </Svg>
     </LayerCake>
@@ -104,8 +107,8 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
 <div class="chart-container">
     <LayerCake {padding} x={xKey} y={yKey} yDomain={[0, null]} data={points}>
         <Svg>
-            <AxisX />
-            <AxisY ticks={4} />
+            <AxisXLC />
+            <AxisYLC ticks={4} />
             <Line />
             <Area />
         </Svg>
@@ -117,28 +120,8 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
     <!-- Here this is svelte syntax, instead of LayerCake. The two are equivalent. -->
     <svg {width} {height}>
         <g class="inner-chart" transform="translate({padding.left+10}, {padding.top})">
-            <g class="axis x" transform="translate(0, {innerHeight})">
-                {#each  [0, 25, 50, 75, 100] as tick, index}
-                    <g class='tick' transform="translate({xScale(tick)}, 0)">
-                        <line x1={0} x2={0} y1={0} y2={6} stroke="hsla(212, 10%, 53%, 1)" />
-                        <text y={6} dy={9} text-anchor={index === 0 ? "start" : "middle"} dominant-baseline="middle">{tick}%</text>
-                    </g>
-                {/each}
-                <text class="axis-title" 
-                    y={-9} 
-                    x={innerWidth} 
-                    text-anchor="end"
-                >Final Grade &rarr;</text
-                >
-            </g>
-            <g class='axis y'>
-                {#each yScale.ticks(4) as tick, index}
-                  <g class='tick' transform="translate(0, {yScale(tick)})">
-                    <line x1={0} x2={innerWidth} y1={0} y2={0} stroke={index === 0 ? '#8f8f8f' : '#e5e7eb'} />
-                    <text y={-3}>{index === yScale.ticks(4).length - 1 ? `${tick} hours studied` : tick}</text>
-                  </g>
-                {/each}
-              </g>
+            <AxisY width={innerWidth} {yScale} />
+            <AxisX height={innerHeight} width={innerWidth} {xScale} />
             <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
             {#each renderedData as d}
                 <circle
