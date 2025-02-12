@@ -443,7 +443,7 @@ But all of this is quite ugly. Lets make it prettier.
 
 ## V2
 
-Ok, I have to be clear, some things weren't working properly with `Tween`. I have to double check, but I think that `Tween` mutate the original data, meaning that when we make irreversible data wrangling move there is no way back to our original data. So we are going to change strategy for now, following [connorrothschild](https://github.com/connorrothschild/better-data-visualizations-with-svelte) approach to distinguish between the `renderedData` and the `initialData`. We will also update the scrolly chart to make it more compelling using, Connor's example of students' grade with respect to number of hour studied. I will diff the update file, explaining it in the comments as we go along
+Ok, I have to be clear, some things weren't working properly with `Tween`. I have to double check, but I think that `Tween` mutates the original data, meaning that when we make irreversible data wrangling move there is no way back to our original data. So we are going to change strategy for now, following [connorrothschild](https://github.com/connorrothschild/better-data-visualizations-with-svelte) approach to distinguish between the `renderedData` and the `initialData`. We will also update the scrolly chart to make it more compelling using, Connor's example of students' grade with respect to number of hour studied. I will diff the update file, explaining it in the comments as we go along
 
 ```diff
 <script>
@@ -463,6 +463,8 @@ Ok, I have to be clear, some things weren't working properly with `Tween`. I hav
 // new data file
 +import data from './data/study.csv';
 -import data from './data/data.csv';
+
++const padding = {top: 50, right: 50, bottom: 50, left: 10};
 
 // distinguish between state of the data
 +let initialData = data;
@@ -527,9 +529,68 @@ Ok, I have to be clear, some things weren't working properly with `Tween`. I hav
 +const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Original!', 'Grade ordered by studied hours', 'Original!']
 </script>
 
++<div class="chart-container-scrolly" bind:clientWidth={width}>
++    <!-- Here this is svelte syntax, instead of LayerCake. The two are equivalent. -->
++    <svg {width} {height}>
++        <g class="inner-chart" transform="translate({padding.left+10}, {padding.top})">
++            <g class="axis x" transform="translate(0, {innerHeight})">
++                {#each  [0, 25, 50, 75, 100] as tick, index}
++                    <g class='tick' transform="translate({xScale(tick)}, 0)">
++                        <line x1={0} x2={0} y1={0} y2={6} stroke="hsla(212, 10%, 53%, 1)" />
++                        <text y={6} dy={9} text-anchor={index === 0 ? "start" : "middle"}dominant-baseline="middle">{tick}%</text>
++                    </g>
++                {/each}
++                <text class="axis-title" 
++                    y={-9} 
++                    x={innerWidth} 
++                    text-anchor="end"
++                >Final Grade &rarr;</text
++                >
++            </g>
++            <g class='axis y'>
++                {#each yScale.ticks(4) as tick, index}
++                  <g class='tick' transform="translate(0, {yScale(tick)})">
++                    <line x1={0} x2={innerWidth} y1={0} y2={0} stroke={index === 0 ? '#8f8f8f' : '#e5e7eb'} />
++                    <text y={-3}>{index === yScale.ticks(4).length - 1 ? `${tick} hours studied` : tick}</text>
++                  </g>
++                {/each}
++              </g>
++            <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
++            {#each renderedData as d}
++                <circle
++                    cx={xScale(d.grade)} 
++                    cy={yScale(d.hours)}
++                    r={10}
++                    fill="steelblue"
++                    stroke="#000000"
++                />
++            {/each}
++    </g>
++  </svg>
++</div>
+-<p>The following is a <a href="https://www.w3schools.com/howto/howto_css_sticky_element.asp">sticky chart</a>. As you scroll down, it'll stick to your window.</p>
+-<div class="chart-container-scrolly">
+-    <!-- Here this is svelte syntax, instead of LayerCake. The two are equivalent. -->
+-    <svg {width} {height}>
+-        <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
+-        {#each data as d, index}
+-      <!-- tweenedX is nice because it deals with motion here, as data changes -->
+-      <circle
+-        cx={xScale(tweenedX.current[index])} 
+-        cy={yScale(d.bar)}
+-        r={15}
+-        fill="steelblue"
+-        stroke="#000000"
+-      />
+-    {/each}
+-  </svg>
+-</div>
+
++ {#each myNarrative as text, i}
+- {#each [0, 1, 2, 3, 4] as text, i}
 ```
 
-
+Ok, there were many changes. I update the completed script to refelect the most fancy updated version, but you can find the old code in `./old`.
 
 <details><summary>Completed script!</summary>
 

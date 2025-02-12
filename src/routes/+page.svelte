@@ -22,8 +22,6 @@ import Scrolly from "./components/helpers/Scrolly.svelte";
 import points from './data/points.csv';
 import data from './data/study.csv';
 
-// let data = structuredClone(rawData);
-
 const xKey = 'myX';
 const yKey = 'myY';
 
@@ -32,12 +30,13 @@ points.forEach(d => {
     d[yKey] = +d[yKey];
 });
 
-// Global properties of the plots. 
+// Global properties of the plots.
+
 let width = $state(400),
     height = 400;
 
 
-const padding = { top: 50, right: 50, bottom: 50, left: 10 };
+const padding = {top: 50, right: 50, bottom: 50, left: 10};
 
 let innerWidth = $derived(width - padding.left - padding.right);
 let innerHeight = height - padding.top - padding.bottom;
@@ -46,33 +45,32 @@ let innerHeight = height - padding.top - padding.bottom;
 let xScale = $derived(scaleLinear().domain([0, 100]).range([0, innerWidth]));
 let yScale = scaleLinear().domain([0, 70]).range([innerHeight, 0]);
 
-
-// Data preparation for scrolly telling
+// Make data reactive
 let value = $state();
-
-// Tween is a helper function to deal with motion associated with scrolling
-// const tweenedX = new Tween(data.map((d) => d.grade));
 let initialData = data;
 let renderedData = $state(initialData);
 
 let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
 let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
 
-// Based on value changing, we modify the data. 
+// Based on value changing, we modify the data.
 // Here we just flip between setFoo and setBar.
-//  https://svelte.dev/docs/svelte/$effect
+// https://svelte.dev/docs/svelte/$effect
 $effect(() => {
     if (value == 0) {
         renderedData = initialData;
     } else if (value == 1) {
         renderedData = initialData.map(d => ({
-        ...d,
-        hours: Y_MIDPOINT,
-        grade: X_MIDPOINT
+            ...d,
+            hours: Y_MIDPOINT,
+            grade: X_MIDPOINT
         }));
     } else if (value == 2) {
         // tweenedX.target = data.map((d) => d.hours);
-        renderedData = initialData.map(d => ({ ...d, hours: Y_MIDPOINT }));
+        renderedData = initialData.map(d => ({
+            ...d,
+            hours: Y_MIDPOINT
+        }));
     } else if (value == 3) {
         // tweenedX.target = rawData.map((d) => d.grade);
         renderedData = initialData;
@@ -82,7 +80,7 @@ $effect(() => {
     } else if (value == 5) {
         // tweenedX.target = rawData.map((d) => d.grade);
         renderedData = initialData;
-    } 
+    }
 })
 
 
