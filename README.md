@@ -590,7 +590,93 @@ Ok, I have to be clear, some things weren't working properly with `Tween`. I hav
 - {#each [0, 1, 2, 3, 4] as text, i}
 ```
 
-Ok, there were many changes. I update the completed script to refelect the most fancy updated version, but you can find the old code in `./old`.
+
+
+Ok, there were many changes, so i might have messed up here and there (I'll clean later). In the meantime, I updated the completed script to refelect V2 version, so can always just copy-paste that. but you can find the old code in `./old`. There is one additional change. Notice that now we have a more fancy, custom plot made with Vanilla Svelte. We can do like LayerCake, and modular parts of the plot into their own component. We will have `./components/AxisX.svelte`
+
+```svelte
+<script>
+    let { height, width, xScale } = $props();
+    
+    let xTicks = [0, 25, 50, 75, 100];
+  </script>
+  
+  <g class="axis x" transform="translate(0, {height})">
+    {#each xTicks as tick, index}
+      <g class='tick' transform="translate({xScale(tick)}, 0)">
+        <line x1={0} x2={0} y1={0} y2={6} stroke="hsla(212, 10%, 53%, 1)" />
+        <text y={6} dy={9} text-anchor={index === 0 ? "start" : "middle"} dominant-baseline="middle">{tick}%</text>
+      </g>
+    {/each}
+    <text class="axis-title" 
+          y={-9} 
+          x={width} 
+          text-anchor="end"
+      >Final Grade &rarr;</text
+    >
+  </g>
+```
+
+And `./components/AxisY`
+
+```svelte
+<script>
+    let {width, yScale } = $props();
+    
+    let yTicks = yScale.ticks(4);
+  </script>
+  
+  <g class='axis y'>
+    {#each yTicks as tick, index}
+      <g class='tick' transform="translate(0, {yScale(tick)})">
+        <line x1={0} x2={width} y1={0} y2={0} stroke={index === 0 ? '#8f8f8f' : '#e5e7eb'} />
+        <text y={-3}>{index === yTicks.length - 1 ? `${tick} hours studied` : tick}</text>
+      </g>
+    {/each}
+  </g>
+```
+
+It is much easier to maintain and improve readibility to do it like that. Then in the main page, we do
+
+```diff
+<script>
++import AxisXLC from './components/AxisX.LC.svelte';
+-import AxisX from './components/AxisX.LC.svelte';
++import AxisYLC from './components/AxisY.LC.svelte';
+-import AxisY from './components/AxisX.LC.svelte';
+
+// Custom svelte
++import AxisX from './components/AxisX.svelte';
++import AxisY from './components/AxisY.svelte';
+<script>
+
++<AxisY width={innerWidth} {yScale} />
+-<g class="axis x" transform="translate(0, {innerHeight})">
+-    {#each  [0, 25, 50, 75, 100] as tick, index}
+-        <g class='tick' transform="translate({xScale(tick)}, 0)">
+-            <line x1={0} x2={0} y1={0} y2={6} stroke="hsla(212, 10%, 53%, 1)" />
+-            <text y={6} dy={9} text-anchor={index === 0 ? "start" : "middle"} dominant-baseline="middle">{tick}%</text>
+-        </g>
+-    {/each}
+-    <text class="axis-title" 
+-        y={-9} 
+-        x={innerWidth} 
+-        text-anchor="end"
+-    >Final Grade &rarr;</text
+-    >
+-</g>
++<AxisX height={innerHeight} width={innerWidth} {xScale} />
+-<g class='axis y'>
+-   {#each yScale.ticks(4) as tick, index}
+-     <g class='tick' transform="translate(0, {yScale(tick)})">
+-       <line x1={0} x2={innerWidth} y1={0} y2={0} stroke={index === 0 ? '#8f8f8f' : '#e5e7eb'} />
+-       <text y={-3}>{index === yScale.ticks(4).length - 1 ? `${tick} hours studied` : tick}</text>
+-     </g>
+-   {/each}
+- </g>
+```
+
+It is much cleaner now...
 
 <details><summary>Completed script!</summary>
 
