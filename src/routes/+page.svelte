@@ -7,8 +7,8 @@ import { Tween } from 'svelte/motion'; // In-house svelte library for dealing wi
 import Scatter from './components/Scatter.svelte';
 import Line from './components/Line.svelte';
 import Area from './components/Area.svelte';
-import AxisX from './components/AxisX.svelte';
-import AxisY from './components/AxisY.svelte';
+import AxisX from './components/AxisX.LC.svelte';
+import AxisY from './components/AxisY.LC.svelte';
 
 // Scrolly component copied from 
 // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
@@ -17,7 +17,9 @@ import Scrolly from "./components/helpers/Scrolly.svelte";
 // This example loads csv data as json using @rollup/plugin-dsv
 // But for some reason Tweening does't work with this data.
 import points from './data/points.csv';
-import data from './data/data.csv';
+import data from './data/study.csv';
+
+// let data = structuredClone(rawData);
 
 const xKey = 'myX';
 const yKey = 'myY';
@@ -28,39 +30,60 @@ points.forEach(d => {
 });
 
 // Global properties of the plots. 
-let width = 400;
-let height = 400;
+let width = $state(400),
+    height = 400;
+
+
+const padding = { top: 50, right: 50, bottom: 50, left: 10 };
+
+let innerWidth = $derived(width - padding.left - padding.right);
+let innerHeight = height - padding.top - padding.bottom;
 
 // Scales for the plots
-let xScale = scaleLinear().domain([0, 10]).range([0, width]);
-let yScale = scaleLinear().domain([0, 10]).range([height, 0]);
+let xScale = $derived(scaleLinear().domain([0, 100]).range([0, innerWidth]));
+let yScale = scaleLinear().domain([0, 70]).range([innerHeight, 0]);
 
 
 // Data preparation for scrolly telling
 let value = $state();
 
 // Tween is a helper function to deal with motion associated with scrolling
-const tweenedX = new Tween(data.map((d) => d.foo));
-// This is just one easy example of doing scrollytelling, using same data but slightly different plots
-const setFoo = function() {
-    tweenedX.set(data.map((d) => d.foo));
-};
-const setBar = function() {
-    tweenedX.set(data.map((d) => d.bar));
-};
+// const tweenedX = new Tween(data.map((d) => d.grade));
+let initialData = data;
+let renderedData = $state(initialData);
+
+let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
+let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
 
 // Based on value changing, we modify the data. 
 // Here we just flip between setFoo and setBar.
 //  https://svelte.dev/docs/svelte/$effect
 $effect(() => {
     if (value == 0) {
-        setFoo();
+        renderedData = initialData;
     } else if (value == 1) {
-        setBar();
+        renderedData = initialData.map(d => ({
+        ...d,
+        hours: Y_MIDPOINT,
+        grade: X_MIDPOINT
+        }));
     } else if (value == 2) {
-        setFoo();
-    }
+        // tweenedX.target = data.map((d) => d.hours);
+        renderedData = initialData.map(d => ({ ...d, hours: Y_MIDPOINT }));
+    } else if (value == 3) {
+        // tweenedX.target = rawData.map((d) => d.grade);
+        renderedData = initialData;
+    } else if (value == 4) {
+        // tweenedX.target = rawData.map((d) => d.grade);
+        renderedData = initialData.toSorted((a, b) => a.grade - b.grade);
+    } else if (value == 5) {
+        // tweenedX.target = rawData.map((d) => d.grade);
+        renderedData = initialData;
+    } 
 })
+
+
+const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Original!', 'Grade ordered by studied hours', 'Original!']
 </script>
 
 <h1>Hello Scrollytelling!</h1>
@@ -68,7 +91,7 @@ $effect(() => {
 <p>Here's an example of a chart made with <a href="">Sveltekit</a> and <a href="https://layercake.graphics/">LayerCake</a>. This is a simple scatter plot by LayerCake:</p>
 
 <div class="chart-container">
-    <LayerCake x={xKey} y={yKey} data={points} padding={{ top: 50, right: 50, bottom: 50, left: 50 }}>
+    <LayerCake x={xKey} y={yKey} data={points} {padding}>
         <Svg>
             <AxisX />
             <Scatter fill={'steelblue'} r={5} />
@@ -79,7 +102,7 @@ $effect(() => {
 <p>Here's a second plot, using a combination of "Marks" (such as Line and Area) to make a more sophisticated plot.</p>
 
 <div class="chart-container">
-    <LayerCake padding={{ top: 50, right: 50, bottom: 50, left: 50 }} x={xKey} y={yKey} yDomain={[0, null]} data={points}>
+    <LayerCake {padding} x={xKey} y={yKey} yDomain={[0, null]} data={points}>
         <Svg>
             <AxisX />
             <AxisY ticks={4} />
@@ -90,20 +113,43 @@ $effect(() => {
 </div>
 
 <p>The following is a <a href="https://www.w3schools.com/howto/howto_css_sticky_element.asp">sticky chart</a>. As you scroll down, it'll stick to your window.</p>
-<div class="chart-container-scrolly">
+<div class="chart-container-scrolly" bind:clientWidth={width}>
     <!-- Here this is svelte syntax, instead of LayerCake. The two are equivalent. -->
     <svg {width} {height}>
-        <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
-        {#each data as d, index}
-      <!-- tweenedX is nice because it deals with motion here, as data changes -->
-      <circle
-        cx={xScale(tweenedX.current[index])} 
-        cy={yScale(d.bar)}
-        r={15}
-        fill="steelblue"
-        stroke="#000000"
-      />
-    {/each}
+        <g class="inner-chart" transform="translate({padding.left+10}, {padding.top})">
+            <g class="axis x" transform="translate(0, {innerHeight})">
+                {#each  [0, 25, 50, 75, 100] as tick, index}
+                    <g class='tick' transform="translate({xScale(tick)}, 0)">
+                        <line x1={0} x2={0} y1={0} y2={6} stroke="hsla(212, 10%, 53%, 1)" />
+                        <text y={6} dy={9} text-anchor={index === 0 ? "start" : "middle"} dominant-baseline="middle">{tick}%</text>
+                    </g>
+                {/each}
+                <text class="axis-title" 
+                    y={-9} 
+                    x={innerWidth} 
+                    text-anchor="end"
+                >Final Grade &rarr;</text
+                >
+            </g>
+            <g class='axis y'>
+                {#each yScale.ticks(4) as tick, index}
+                  <g class='tick' transform="translate(0, {yScale(tick)})">
+                    <line x1={0} x2={innerWidth} y1={0} y2={0} stroke={index === 0 ? '#8f8f8f' : '#e5e7eb'} />
+                    <text y={-3}>{index === yScale.ticks(4).length - 1 ? `${tick} hours studied` : tick}</text>
+                  </g>
+                {/each}
+              </g>
+            <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
+            {#each renderedData as d}
+                <circle
+                    cx={xScale(d.grade)} 
+                    cy={yScale(d.hours)}
+                    r={10}
+                    fill="steelblue"
+                    stroke="#000000"
+                />
+            {/each}
+    </g>
   </svg>
 </div>
 
@@ -113,7 +159,7 @@ $effect(() => {
 	<h2>Scrolly <span>{value || "-"}</span></h2>
 	<div class="spacer"></div>
 	<Scrolly bind:value>
-		{#each [0, 1, 2, 3, 4] as text, i}
+		{#each myNarrative as text, i}
       <!-- This is where we change values based on a variable active. See CSS. -->
 			{@const active = value === i}
 			<div class="step" class:active>
@@ -188,17 +234,14 @@ $effect(() => {
     }
 
     .chart-container-scrolly {
-        width: 400px;
-        /* here it works because width of the plot is 400px */
+        width: 40%;
         background: white;
         height: 400px;
         box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
         position: sticky;
         top: 15%;
-        right: 30%;
-        /* Adds padding from the right side */
+        right: 15%;
         margin-left: auto;
-        /* Pushes the container to the right */
     }
 
 
