@@ -396,8 +396,6 @@ Then we will import it, similar than before
 
 ```
 
-
-
 But all of this is quite ugly. Lets make it prettier.
 
 ```svelte
@@ -442,6 +440,96 @@ But all of this is quite ugly. Lets make it prettier.
      [SAME STUFF THAN BEFORE]
 < /style>
 ```
+
+## V2
+
+Ok, I have to be clear, some things weren't working properly with `Tween`. I have to double check, but I think that `Tween` mutate the original data, meaning that when we make irreversible data wrangling move there is no way back to our original data. So we are going to change strategy for now, following [connorrothschild](https://github.com/connorrothschild/better-data-visualizations-with-svelte) approach to distinguish between the `renderedData` and the `initialData`. We will also update the scrolly chart to make it more compelling using, Connor's example of students' grade with respect to number of hour studied. I will diff the update file, explaining it in the comments as we go along
+
+```diff
+<script>
+// we will make the width reactive. It is a nice way to make our plot reactive to the user's screen width.
++let width = $state(400),
++    height = 400;
+
+// it is good practice to include padding
++const padding = { top: 50, right: 50, bottom: 50, left: 10 };
+
+// instead of using global width, we use innerWidth and innerHeigth now
+// Note that we use $derived() instead of $state() to declare reactivity, which is a Svelte5 rune thing.
+// I don't want to explain it now, but the gist is that we 'derive' innerWidth from width's reactivity.
++let innerWidth = $derived(width - padding.left - padding.right);
++let innerHeight = height - padding.top - padding.bottom;
+
+// new data file
++import data from './data/study.csv';
+-import data from './data/data.csv';
+
+// distinguish between state of the data
++let initialData = data;
++let renderedData = $state(initialData);
+
++let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
++let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
+
+// Same story than innerWidth. Also note that here our scaling will be the innerWidth and innerHeight
+-let xScale = scaleLinear().domain([0, 10]).range([0, width]);
+-let yScale = scaleLinear().domain([0, 10]).range([height, 0]);
++let xScale = $derived(scaleLinear().domain([0, 100]).range([0, innerWidth]));
++let yScale = scaleLinear().domain([0, 70]).range([innerHeight, 0]);
+
+// We will make our scrolly a bit more fancy
++let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
++let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
+
++$effect(() => {
++    if (value == 0) {
++        renderedData = initialData;
++    } else if (value == 1) {
++        renderedData = initialData.map(d => ({
++        ...d,
++        hours: Y_MIDPOINT,
++        grade: X_MIDPOINT
++        }));
++    } else if (value == 2) {
++        renderedData = initialData.map(d => ({ ...d, hours: Y_MIDPOINT }));
++    } else if (value == 3) {
++        renderedData = initialData;
++    } else if (value == 4) {
++        renderedData = initialData.toSorted((a, b) => a.grade - b.grade);
++    } else if (value == 5) {
++        renderedData = initialData;
++    } 
+})
+-    // Tween is a helper function to deal with motion associated with scrolling
+-    const tweenedX = new Tween(data.map((d) => d.foo));
+-    // This is just one easy example of doing scrollytelling, using same data but slightly different plots
+-    const setFoo = function() {
+-        tweenedX.set(data.map((d) => d.foo));
+-    };
+-    const setBar = function() {
+-        tweenedX.set(data.map((d) => d.bar));
+-    };
+-    
+-    // Based on value changing, we modify the data. 
+-    // Here we just flip between setFoo and setBar.
+-   //  https://svelte.dev/docs/svelte/$effect
+-    $effect(() => {
+-        if (value == 0) {
+-            setFoo();
+-        } else if (value == 1) {
+-            setBar();
+-        } else if (value == 2) {
+-            setFoo();
+-        }
+-    })
+
+// we will abstract away the narrative
++const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Original!', 'Grade ordered by studied hours', 'Original!']
+</script>
+
+```
+
+
 
 <details><summary>Completed script!</summary>
 
