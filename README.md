@@ -23,11 +23,11 @@ pnpm install
 pnpm run dev
 ```
 - Open up the local server on your browser, the default address is `http://localhost:5173/`.
-- We will also need `LayerCake` and `@rollup/plugin-dsv`
-```bash
+- We will also need `LayerCake`, `d3-array`, `d3-scale`, and `@rollup/plugin-dsv`
+```bas
 pnpm install --save layercake
 pnpm install @rollup/plugin-dsv --save-dev
-pnpm install d3-scale
+pnpm install d3-scale d3-array
 ```
 - For `@rollup/plugin-dsv`, we also need to modify `vite.config.js` in the root directory:
 ```js
@@ -50,7 +50,7 @@ mkdir -p src/routes/components/helpers src/routes/data
 # mv to components dir
 cd src/routes/components
 # create the file
-touch Line.svelte Area.svelte AxisX.svelte AxisY.svelte Scatter.svelte
+touch Line.svelte Area.svelte AxisX.LC.svelte AxisY.LC.svelte Scatter.svelte
 # grab the Scrolly script from the pudding github repo
 wget https://raw.githubusercontent.com/the-pudding/svelte-starter/refs/heads/main/src/components/helpers/Scrolly.svelte -O helpers/Scrolly.svelte
 # move up one folder, then creates points.csv
@@ -80,8 +80,8 @@ Lets take it step by step, shall we. I will explain key components of svelte as 
   import Scatter from './components/Scatter.svelte';
   import Line from './components/Line.svelte';
   import Area from './components/Area.svelte';
-  import AxisX from './components/AxisX.svelte';
-  import AxisY from './components/AxisY.svelte';
+  import AxisX from './components/AxisX.LC.svelte';
+  import AxisY from './components/AxisY.LC.svelte';
 
   // Scrolly component copied from 
   // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
