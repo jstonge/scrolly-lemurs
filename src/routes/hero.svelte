@@ -1,13 +1,33 @@
 <script>
-let todos = [
-    `Learn <u><a href="https://svelte.dev/">Svelte</a></u>`,
-    `Use <u><a href="https://layercake.graphics/">LayerCake</a></u> to save time`,
-    `Do Scrollytelling using <u><a href=https://github.com/the-pudding/svelte-starter/blob/main/src/components/demo/Demo.Scrolly.svelte">Scrolly</a></u>`,
-    "Be awesome"
-  ];
+    import { paint } from './gradient.js';
+
+    let canvas;
+
+    let todos = [
+        `Learn <u><a href="https://svelte.dev/">Svelte</a></u>`,
+        `Use <u><a href="https://layercake.graphics/">LayerCake</a></u> to save time`,
+        `Do Scrollytelling using <u><a href=https://github.com/the-pudding/svelte-starter/blob/main/src/components/demo/Demo.Scrolly.svelte">Scrolly</a></u>`,
+        "Be awesome"
+    ];
+
+    $effect(() => {
+		const context = canvas.getContext('2d');
+
+		let frame = requestAnimationFrame(function loop(t) {
+			frame = requestAnimationFrame(loop);
+			paint(context, t);
+		});
+
+		return () => {
+			cancelAnimationFrame(frame);
+		};
+	});
 </script>
 
+
+
 <div class="hero-banner">
+    <canvas bind:this={canvas} width={32} height={32}></canvas>
     <div class="hero-overlay"></div>
   
     <div class="hero-content">
@@ -41,6 +61,20 @@ let todos = [
         justify-content: center;
         background: linear-gradient(0.25turn, #3f87a6, #ebf8e1, #f69d3c);
         background-size: cover;
+    }
+
+    /* Place the canvas in the bottom right of the hero */
+    .hero-banner canvas {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 60vmin;  /* Adjust as needed */
+        height: 60vmin;
+        background-color: #666;
+        mask: url(./test.svg) 50% 50% no-repeat;
+        mask-size: 60vmin;
+        -webkit-mask: url(./test.svg) 50% 50% no-repeat;
+        -webkit-mask-size: 60vmin;
     }
 
     /* Content container with a hand-drawn border style */
@@ -124,6 +158,7 @@ let todos = [
       margin-bottom: 1rem;
     }
   }
+
 
 </style>
   
