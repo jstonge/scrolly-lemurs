@@ -4,7 +4,7 @@
     import { Tween } from 'svelte/motion'; // In-house svelte library for dealing with motions
     
     // Pretty plot components copied from LayerCake
-    import Scatter from '../components/Scatter.svelte';
+    import Scatter from '../components/Scatter.LC.svelte';
     import Line from '../components/Line.svelte';
     import Area from '../components/Area.svelte';
     import AxisX from '../components/AxisX.LC.svelte';

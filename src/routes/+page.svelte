@@ -1,17 +1,14 @@
-<script>
-import { LayerCake, Svg} from 'layercake'; // Import the LayerCake and Svg components from LayerCake
-import { scaleLinear } from "d3-scale"; // d3 essentially for different scales
-
+<script>    
 // Pretty plot components copied from LayerCake
-import Scatter from './components/Scatter.svelte';
+import { LayerCake, Svg} from 'layercake'; // Import the LayerCake and Svg components from LayerCake
+import ScatterLC from './components/Scatter.LC.svelte';
 import Line from './components/Line.svelte';
 import Area from './components/Area.svelte';
 import AxisXLC from './components/AxisX.LC.svelte';
 import AxisYLC from './components/AxisY.LC.svelte';
 
-// Custom svelte
-import AxisX from './components/AxisX.svelte';
-import AxisY from './components/AxisY.svelte';
+// Custom svelte plot
+import Scatter from './components/Scatter.svelte';
 
 // Scrolly component copied from 
 // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
@@ -20,7 +17,6 @@ import Scrolly from "./components/helpers/Scrolly.svelte";
 // This example loads csv data as json using @rollup/plugin-dsv
 // But for some reason Tweening does't work with this data.
 import points from './data/points.csv';
-import data from './data/study.csv';
 
 const xKey = 'myX';
 const yKey = 'myY';
@@ -31,71 +27,26 @@ points.forEach(d => {
 });
 
 // Global properties of the plots.
-
 let width = $state(400),
     height = 400;
 
-
 const padding = {top: 50, right: 50, bottom: 50, left: 10};
-
-let innerWidth = $derived(width - padding.left - padding.right);
-let innerHeight = height - padding.top - padding.bottom;
-
-// Scales for the plots
-let xScale = $derived(scaleLinear().domain([0, 100]).range([0, innerWidth]));
-let yScale = scaleLinear().domain([0, 70]).range([innerHeight, 0]);
 
 // Make data reactive
 let value = $state();
-let initialData = data;
-let renderedData = $state(initialData);
-
-let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
-let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
-
-// Based on value changing, we modify the data.
-// Here we just flip between setFoo and setBar.
-// https://svelte.dev/docs/svelte/$effect
-$effect(() => {
-    if (value == 0) {
-        renderedData = initialData;
-    } else if (value == 1) {
-        renderedData = initialData.map(d => ({
-            ...d,
-            hours: Y_MIDPOINT,
-            grade: X_MIDPOINT
-        }));
-    } else if (value == 2) {
-        // tweenedX.target = data.map((d) => d.hours);
-        renderedData = initialData.map(d => ({
-            ...d,
-            hours: Y_MIDPOINT
-        }));
-    } else if (value == 3) {
-        // tweenedX.target = rawData.map((d) => d.grade);
-        renderedData = initialData;
-    } else if (value == 4) {
-        // tweenedX.target = rawData.map((d) => d.grade);
-        renderedData = initialData.toSorted((a, b) => a.grade - b.grade);
-    } else if (value == 5) {
-        // tweenedX.target = rawData.map((d) => d.grade);
-        renderedData = initialData;
-    }
-})
-
 
 const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Original!', 'Grade ordered by studied hours', 'Original!']
 </script>
 
 <h1>Hello Scrollytelling!</h1>
 
-<p>Here's an example of a chart made with <a href="">Sveltekit</a> and <a href="https://layercake.graphics/">LayerCake</a>. This is a simple scatter plot by LayerCake:</p>
+<p>Here's an example of a chart made with <a href="https://svelte.dev/">Sveltekit</a> and <a href="https://layercake.graphics/">LayerCake</a>. This is a simple scatter plot by LayerCake:</p>
 
 <div class="chart-container">
     <LayerCake x={xKey} y={yKey} data={points} {padding}>
         <Svg>
             <AxisXLC />
-            <Scatter fill={'steelblue'} r={5} />
+            <ScatterLC fill={'steelblue'} r={5} />
         </Svg>
     </LayerCake>
 </div>
@@ -115,25 +66,9 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
 
 <p>The following is a <a href="https://www.w3schools.com/howto/howto_css_sticky_element.asp">sticky chart</a>. As you scroll down, it'll stick to your window.</p>
 <div class="chart-container-scrolly" bind:clientWidth={width}>
-    <!-- Here this is svelte syntax, instead of LayerCake. The two are equivalent. -->
-    <svg {width} {height}>
-        <g class="inner-chart" transform="translate({padding.left+10}, {padding.top})">
-            <AxisY width={innerWidth} {yScale} />
-            <AxisX height={innerHeight} width={innerWidth} {xScale} />
-            <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
-            {#each renderedData as d}
-                <circle
-                    cx={xScale(d.grade)} 
-                    cy={yScale(d.hours)}
-                    r={10}
-                    fill="steelblue"
-                    stroke="#000000"
-                />
-            {/each}
-    </g>
-  </svg>
+    <!-- Custom svelte component. -->
+    <Scatter {value} {width} {height} {padding} />
 </div>
-
 
 <section id="scrolly">
   <!-- {value || "-"} when undefined, "-", else put value -->
@@ -190,13 +125,6 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
         border-bottom: 3px solid #ff7e5f;
         display: inline-block;
         margin: 20px auto;
-    }
-
-    circle {
-        transition: r 300ms ease, opacity 500ms ease,
-        cx 500ms cubic-bezier(0.76, 0, 0.24, 1),
-        cy 500ms cubic-bezier(0.76, 0, 0.24, 1); /* https://easings.net/#easeInOutQuart */
-        cursor: pointer;
     }
 
     /*

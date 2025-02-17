@@ -77,7 +77,7 @@ Lets take it step by step, shall we. I will explain key components of svelte as 
   import { Tween } from 'svelte/motion'; // In-house svelte library for dealing with motions
 
   // Pretty plot components copied from LayerCake
-  import Scatter from './components/Scatter.svelte';
+  import Scatter from './components/Scatter.LC.svelte';
   import Line from './components/Line.svelte';
   import Area from './components/Area.svelte';
   import AxisX from './components/AxisX.LC.svelte';
@@ -396,6 +396,8 @@ Then we will import it, similar than before
 
 ```
 
+## Making it pretty
+
 But all of this is quite ugly. Lets make it prettier.
 
 ```svelte
@@ -590,8 +592,6 @@ Ok, I have to be clear, some things weren't working properly with `Tween`. I hav
 - {#each [0, 1, 2, 3, 4] as text, i}
 ```
 
-
-
 Ok, there were many changes, so i might have messed up here and there (I'll clean later). In the meantime, I updated the completed script to refelect V2 version, so can always just copy-paste that. but you can find the old code in `./old`. There is one additional change. Notice that now we have a more fancy, custom plot made with Vanilla Svelte. We can do like LayerCake, and modular parts of the plot into their own component. We will have `./components/AxisX.svelte`
 
 ```svelte
@@ -678,20 +678,108 @@ It is much easier to maintain and improve readibility to do it like that. Then i
 
 It is much cleaner now...
 
+## One last module...
+
+We will modularize further by making our custom svelte chart as a component. I will leave it to you to remove the relevant lines from the `+page.svelte` to make it work, this time around.
+
+<details><summary>.components/Scatter.svelte</summary>
+
+```svelte
+
+<script>
+    import AxisX from './AxisX.svelte';
+    import AxisY from './AxisY.svelte';
+
+    import { scaleLinear } from "d3-scale";
+    
+    import data from '../data/study.csv';
+
+    let { value, width, height, padding } = $props();
+        
+    let innerWidth = $derived(width - padding.left - padding.right);
+    let innerHeight = height - padding.top - padding.bottom;
+    
+    // Make data reactive
+    let initialData = data;
+    let renderedData = $state(initialData);
+
+    // Scales for the plots
+    let xScale = $derived(scaleLinear().domain([0, 100]).range([0, innerWidth]));
+    let yScale = scaleLinear().domain([0, 70]).range([innerHeight, 0]);
+    
+    let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
+    let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
+
+    $effect(() => {
+        if (value == 0) {
+        renderedData = initialData;
+        } else if (value == 1) {
+            renderedData = initialData.map(d => ({
+                ...d,
+                hours: Y_MIDPOINT,
+                grade: X_MIDPOINT
+            }));
+        } else if (value == 2) {
+            // tweenedX.target = data.map((d) => d.hours);
+            renderedData = initialData.map(d => ({
+                ...d,
+                hours: Y_MIDPOINT
+            }));
+        } else if (value == 3) {
+            // tweenedX.target = rawData.map((d) => d.grade);
+            renderedData = initialData;
+        } else if (value == 4) {
+            // tweenedX.target = rawData.map((d) => d.grade);
+            renderedData = initialData.toSorted((a, b) => a.grade - b.grade);
+        } else if (value == 5) {
+            // tweenedX.target = rawData.map((d) => d.grade);
+            renderedData = initialData;
+        }
+    });
+</script>
+
+<svg {width} {height}>
+    <g class="inner-chart" transform="translate({padding.left+10}, {padding.top})">
+        <AxisY width={innerWidth} {yScale} />
+        <AxisX height={innerHeight} width={innerWidth} {xScale} />
+        <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
+        {#each renderedData as d}
+            <circle
+                cx={xScale(d.grade)} 
+                cy={yScale(d.hours)}
+                r={10}
+                fill="steelblue"
+                stroke="#000000"
+            />
+        {/each}
+</g>
+</svg>
+
+<style>
+    circle {
+        transition: r 300ms ease, opacity 500ms ease,
+        cx 500ms cubic-bezier(0.76, 0, 0.24, 1),
+        cy 500ms cubic-bezier(0.76, 0, 0.24, 1); /* https://easings.net/#easeInOutQuart */
+        cursor: pointer;
+    }
+</style>
+
+Here's the complete script, if necessary.
+
 <details><summary>Completed script!</summary>
 
 ```svelte
-<script>
-import { LayerCake, Svg} from 'layercake'; // Import the LayerCake and Svg components from LayerCake
-import { scaleLinear } from "d3-scale"; // d3 essentially for different scales
-import { Tween } from 'svelte/motion'; // In-house svelte library for dealing with motions
-
+<script>    
 // Pretty plot components copied from LayerCake
-import Scatter from './components/Scatter.svelte';
+import { LayerCake, Svg} from 'layercake'; // Import the LayerCake and Svg components from LayerCake
+import ScatterLC from './components/Scatter.LC.svelte';
 import Line from './components/Line.svelte';
 import Area from './components/Area.svelte';
-import AxisX from './components/AxisX.svelte';
-import AxisY from './components/AxisY.svelte';
+import AxisXLC from './components/AxisX.LC.svelte';
+import AxisYLC from './components/AxisY.LC.svelte';
+
+// Custom svelte plot
+import Scatter from './components/Scatter.svelte';
 
 // Scrolly component copied from 
 // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
@@ -709,64 +797,27 @@ points.forEach(d => {
     d[yKey] = +d[yKey];
 });
 
-// Global properties of the plots. 
-let width = 400;
-let height = 400;
+// Global properties of the plots.
+let width = $state(400),
+    height = 400;
 
-// Scales for the plots
-let xScale = scaleLinear().domain([0, 10]).range([0, width]);
-let yScale = scaleLinear().domain([0, 10]).range([height, 0]);
+const padding = {top: 50, right: 50, bottom: 50, left: 10};
 
-
-// this is a reactive variable, that will change based on scrolling progression (see below)
-// TODO: how do we make the data reactive when loaded from a file?
-let data = [
-      { foo: 4, bar: 1 },
-      { foo: 6, bar: 7 },
-      { foo: 9, bar: 5 },
-      { foo: 2, bar: 4 },
-      { foo: 8, bar: 2 },
-      { foo: 9, bar: 9 },
-      { foo: 5, bar: 3 },
-      { foo: 3, bar: 8 },
-      { foo: 1, bar: 6 },
-    ];
-
-// Data preparation for scrolly telling
+// Make data reactive
 let value = $state();
-// Tween is a helper function to deal with motion associated with scrolling
-const tweenedX = new Tween(data.map((d) => d.foo));
-// This is just one easy example of doing scrollytelling, using same data but slightly different plots
-const setFoo = function() {
-    tweenedX.set(data.map((d) => d.foo));
-};
-const setBar = function() {
-    tweenedX.set(data.map((d) => d.bar));
-};
 
-// Based on value changing, we modify the data. 
-// Here we just flip between setFoo and setBar.
-//  https://svelte.dev/docs/svelte/$effect
-$effect(() => {
-    if (value == 0) {
-        setFoo();
-    } else if (value == 1) {
-        setBar();
-    } else if (value == 2) {
-        setFoo();
-    }
-})
+const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Original!', 'Grade ordered by studied hours', 'Original!']
 </script>
 
 <h1>Hello Scrollytelling!</h1>
 
-<p>Here's an example of a chart made with <a href="">Sveltekit</a> and <a href="https://layercake.graphics/">LayerCake</a>. This is a simple scatter plot by LayerCake:</p>
+<p>Here's an example of a chart made with <a href="https://svelte.dev/">Sveltekit</a> and <a href="https://layercake.graphics/">LayerCake</a>. This is a simple scatter plot by LayerCake:</p>
 
 <div class="chart-container">
-    <LayerCake x={xKey} y={yKey} data={points} padding={{ top: 50, right: 50, bottom: 50, left: 50 }}>
+    <LayerCake x={xKey} y={yKey} data={points} {padding}>
         <Svg>
-            <AxisX />
-            <Scatter fill={'steelblue'} r={5} />
+            <AxisXLC />
+            <ScatterLC fill={'steelblue'} r={5} />
         </Svg>
     </LayerCake>
 </div>
@@ -774,10 +825,10 @@ $effect(() => {
 <p>Here's a second plot, using a combination of "Marks" (such as Line and Area) to make a more sophisticated plot.</p>
 
 <div class="chart-container">
-    <LayerCake padding={{ top: 50, right: 50, bottom: 50, left: 50 }} x={xKey} y={yKey} yDomain={[0, null]} data={points}>
+    <LayerCake {padding} x={xKey} y={yKey} yDomain={[0, null]} data={points}>
         <Svg>
-            <AxisX />
-            <AxisY ticks={4} />
+            <AxisXLC />
+            <AxisYLC ticks={4} />
             <Line />
             <Area />
         </Svg>
@@ -785,30 +836,17 @@ $effect(() => {
 </div>
 
 <p>The following is a <a href="https://www.w3schools.com/howto/howto_css_sticky_element.asp">sticky chart</a>. As you scroll down, it'll stick to your window.</p>
-<div class="chart-container-scrolly">
-    <!-- Here this is svelte syntax, instead of LayerCake. The two are equivalent. -->
-    <svg {width} {height}>
-        <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
-        {#each data as d, index}
-      <!-- tweenedX is nice because it deals with motion here, as data changes -->
-      <circle
-        cx={xScale(tweenedX.current[index])} 
-        cy={yScale(d.bar)}
-        r={15}
-        fill="steelblue"
-        stroke="#000000"
-      />
-    {/each}
-  </svg>
+<div class="chart-container-scrolly" bind:clientWidth={width}>
+    <!-- Custom svelte component. -->
+    <Scatter {value} {width} {height} {padding} />
 </div>
-
 
 <section id="scrolly">
   <!-- {value || "-"} when undefined, "-", else put value -->
 	<h2>Scrolly <span>{value || "-"}</span></h2>
 	<div class="spacer"></div>
 	<Scrolly bind:value>
-		{#each [0, 1, 2, 3, 4] as text, i}
+		{#each myNarrative as text, i}
       <!-- This is where we change values based on a variable active. See CSS. -->
 			{@const active = value === i}
 			<div class="step" class:active>
@@ -860,7 +898,6 @@ $effect(() => {
         margin: 20px auto;
     }
 
-
     /*
     The wrapper div needs to have an explicit width and height in CSS.
     It can also be a flexbox child or CSS grid element.
@@ -877,17 +914,14 @@ $effect(() => {
     }
 
     .chart-container-scrolly {
-        width: 400px;
-        /* here it works because width of the plot is 400px */
+        width: 40%;
         background: white;
         height: 400px;
         box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
         position: sticky;
         top: 15%;
-        right: 30%;
-        /* Adds padding from the right side */
+        right: 15%;
         margin-left: auto;
-        /* Pushes the container to the right */
     }
 
 

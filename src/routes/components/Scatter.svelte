@@ -1,34 +1,77 @@
-<!--
-  @component
-  Generates an SVG scatter plot. This component can also work if the x- or y-scale is ordinal, i.e. it has a `.bandwidth` method. See the [timeplot chart](https://layercake.graphics/example/Timeplot) for an example.
- -->
- <script>
-    import { getContext } from 'svelte';
-  
-    const { data, xGet, yGet, xScale, yScale } = getContext('LayerCake');
-  
-    /** @type {Number} [r=5] – The circle's radius. */
-    export let r = 5;
-  
-    /** @type {String} [fill='#0cf'] – The circle's fill color. */
-    export let fill = '#0cf';
-  
-    /** @type {String} [stroke='#000'] – The circle's stroke color. */
-    export let stroke = '#000';
-  
-    /** @type {Number} [strokeWidth=0] – The circle's stroke width. */
-    export let strokeWidth = 0;
-  </script>
-  
-  <g class="scatter-group">
-    {#each $data as d}
-      <circle
-        cx={$xGet(d) + ($xScale.bandwidth ? $xScale.bandwidth() / 2 : 0)}
-        cy={$yGet(d) + ($yScale.bandwidth ? $yScale.bandwidth() / 2 : 0)}
-        {r}
-        {fill}
-        {stroke}
-        stroke-width={strokeWidth}
-      />
-    {/each}
-  </g>
+<script>
+    import AxisX from './AxisX.svelte';
+    import AxisY from './AxisY.svelte';
+
+    import { scaleLinear } from "d3-scale";
+    
+    import data from '../data/study.csv';
+
+    let { value, width, height, padding } = $props();
+        
+    let innerWidth = $derived(width - padding.left - padding.right);
+    let innerHeight = height - padding.top - padding.bottom;
+    
+    // Make data reactive
+    let initialData = data;
+    let renderedData = $state(initialData);
+
+    // Scales for the plots
+    let xScale = $derived(scaleLinear().domain([0, 100]).range([0, innerWidth]));
+    let yScale = scaleLinear().domain([0, 70]).range([innerHeight, 0]);
+    
+    let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
+    let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
+
+    $effect(() => {
+        if (value == 0) {
+        renderedData = initialData;
+        } else if (value == 1) {
+            renderedData = initialData.map(d => ({
+                ...d,
+                hours: Y_MIDPOINT,
+                grade: X_MIDPOINT
+            }));
+        } else if (value == 2) {
+            // tweenedX.target = data.map((d) => d.hours);
+            renderedData = initialData.map(d => ({
+                ...d,
+                hours: Y_MIDPOINT
+            }));
+        } else if (value == 3) {
+            // tweenedX.target = rawData.map((d) => d.grade);
+            renderedData = initialData;
+        } else if (value == 4) {
+            // tweenedX.target = rawData.map((d) => d.grade);
+            renderedData = initialData.toSorted((a, b) => a.grade - b.grade);
+        } else if (value == 5) {
+            // tweenedX.target = rawData.map((d) => d.grade);
+            renderedData = initialData;
+        }
+    });
+</script>
+
+<svg {width} {height}>
+    <g class="inner-chart" transform="translate({padding.left+10}, {padding.top})">
+        <AxisY width={innerWidth} {yScale} />
+        <AxisX height={innerHeight} width={innerWidth} {xScale} />
+        <!-- We loop through the data, drawing the SVG and using d3 to position pixels -->
+        {#each renderedData as d}
+            <circle
+                cx={xScale(d.grade)} 
+                cy={yScale(d.hours)}
+                r={10}
+                fill="steelblue"
+                stroke="#000000"
+            />
+        {/each}
+</g>
+</svg>
+
+<style>
+    circle {
+        transition: r 300ms ease, opacity 500ms ease,
+        cx 500ms cubic-bezier(0.76, 0, 0.24, 1),
+        cy 500ms cubic-bezier(0.76, 0, 0.24, 1); /* https://easings.net/#easeInOutQuart */
+        cursor: pointer;
+    }
+</style>
