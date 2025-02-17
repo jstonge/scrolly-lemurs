@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import AxisX from './AxisX.svelte';
     import AxisY from './AxisY.svelte';
 
@@ -19,8 +19,8 @@
     let xScale = $derived(scaleLinear().domain([0, 100]).range([0, innerWidth]));
     let yScale = scaleLinear().domain([0, 70]).range([innerHeight, 0]);
     
-    let X_MIDPOINT = $state((xScale.domain()[0] + xScale.domain()[1]) / 2);
-    let Y_MIDPOINT = $state((yScale.domain()[0] + yScale.domain()[1]) / 2);
+    let X_MIDPOINT = (xScale.domain()[0] + xScale.domain()[1]) / 2;
+    let Y_MIDPOINT = (yScale.domain()[0] + yScale.domain()[1]) / 2;
 
     $effect(() => {
         if (value == 0) {
@@ -32,19 +32,15 @@
                 grade: X_MIDPOINT
             }));
         } else if (value == 2) {
-            // tweenedX.target = data.map((d) => d.hours);
             renderedData = initialData.map(d => ({
                 ...d,
                 hours: Y_MIDPOINT
             }));
         } else if (value == 3) {
-            // tweenedX.target = rawData.map((d) => d.grade);
             renderedData = initialData;
         } else if (value == 4) {
-            // tweenedX.target = rawData.map((d) => d.grade);
             renderedData = initialData.toSorted((a, b) => a.grade - b.grade);
         } else if (value == 5) {
-            // tweenedX.target = rawData.map((d) => d.grade);
             renderedData = initialData;
         }
     });

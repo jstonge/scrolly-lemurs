@@ -7,6 +7,8 @@ import Area from './components/Area.svelte';
 import AxisXLC from './components/AxisX.LC.svelte';
 import AxisYLC from './components/AxisY.LC.svelte';
 
+import Hero from './hero.svelte';
+
 // Custom svelte plot
 import Scatter from './components/Scatter.svelte';
 
@@ -36,9 +38,13 @@ const padding = {top: 50, right: 50, bottom: 50, left: 10};
 let value = $state();
 
 const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Original!', 'Grade ordered by studied hours', 'Original!']
+
 </script>
 
-<h1>Hello Scrollytelling!</h1>
+<Hero />
+
+
+<h1>LayerCake!</h1>
 
 <p>Here's an example of a chart made with <a href="https://svelte.dev/">Sveltekit</a> and <a href="https://layercake.graphics/">LayerCake</a>. This is a simple scatter plot by LayerCake:</p>
 
@@ -90,25 +96,19 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
 <p>Then we keep going after the sticky sequence.</p>
 
 <style>
+    
     :global(html, body) {
         margin: 0;
-        padding: 2rem;
-        /* Adds padding around the content */
-        background-color: #f9f9f9;
-        /* Light background */
-        font-family: Arial, sans-serif;
-        text-align: center;
-        /* Ensures all content is centered */
+        background-color: #f9f9f9; /* Light background */
+        text-align: center; /* Ensures all content is centered */
     }
 
     /* Ensures spacing between sections */
     section,
     div,
     p {
-        margin-top: 2rem;
-        /* Adds space between elements */
-        margin-bottom: 2rem;
-        /* Adds space between elements */
+        margin-top: 2rem; /* Adds space between elements */
+        margin-bottom: 2rem; /* Adds space between elements */
     }
 
     h1 {
@@ -119,7 +119,7 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
         text-transform: uppercase;
         letter-spacing: 2px;
         padding: 10px 20px;
-        background: linear-gradient(to right, #ff7e5f, #feb47b);
+        background: black;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         border-bottom: 3px solid #ff7e5f;
@@ -132,7 +132,7 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
     It can also be a flexbox child or CSS grid element.
     The point being it needs dimensions since the <LayerCake> element will
     expand to fill it.
-  */
+    */
     .chart-container {
         width: 50%;
         height: 300px;
@@ -196,4 +196,5 @@ const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Origi
         background: white;
         color: black;
     }
+        
 </style>
