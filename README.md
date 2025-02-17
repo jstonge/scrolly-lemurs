@@ -764,9 +764,13 @@ We will modularize further by making our custom svelte chart as a component. I w
     }
 </style>
 
+```
+
 </details>
 
-Here's the complete script, if necessary.
+## complete script
+
+Here's the completed `+page.svelte` script, if necessary. 
 
 <details><summary>Completed script!</summary>
 
