@@ -7,6 +7,7 @@
         `Learn <u><a href="https://svelte.dev/">Svelte</a></u>`,
         `Use <u><a href="https://layercake.graphics/">LayerCake</a></u> to save time`,
         `Do Scrollytelling using <u><a href=https://github.com/the-pudding/svelte-starter/blob/main/src/components/demo/Demo.Scrolly.svelte">Scrolly</a></u>`,
+        `Use LLMs to generate relevant CSS and HTML`,
         "Be awesome"
     ];
 
@@ -28,12 +29,27 @@
 
 <div class="hero-banner">
     <canvas bind:this={canvas} width={32} height={32}></canvas>
+
+    <!-- GitHub link with logo -->
+    <a
+    class="github-link"
+    href="https://github.com/jstonge/scrolly-lemurs/"
+    target="_blank"
+    rel="noopener noreferrer"
+    >
+      <img
+        src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+        alt="GitHub Logo"
+      />
+    </a>
+
     <div class="hero-overlay"></div>
   
     <div class="hero-content">
       <div class="left">
-        <h1>Hello Scrollytelling</h1>
+        <h1>Hello Scrollytelling!</h1>
         <p>This landing page is called a hero.</p>
+        <p><small>(the headers font is called <u><a href="https://fonts.google.com/specimen/Rubik+Doodle+Shadow">Rubik Doodle Shadow</a>)</u></small></p>
       </div>
       <div class="right">
         <h2>To Do</h2>
@@ -77,6 +93,21 @@
         -webkit-mask-size: 60vmin;
     }
 
+     /* GitHub link styling */
+    .github-link {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 3; /* Make sure it appears above other elements */
+    }
+
+    .github-link img {
+      width: 40px;
+      height: 40px; /* Optionally, add some hover effects */
+      transition: transform 0.2s ease;
+    }
+    
+
     /* Content container with a hand-drawn border style */
     .hero-content {
         position: relative;
@@ -99,15 +130,16 @@
     }
 
     /* A dashed divider between the two sections */
-  .hero-content .left {
-    border-right: 2px dashed #7e7e7e;
-  }
+    .hero-content .left {
+      border-right: 2px dashed #7e7e7e;
+    }
 
   /* Hand-drawn header styling */
   .hero-content h1 {
     font-family: 'Rubik Doodle Shadow', cursive;
     font-size: 3rem;
     margin-bottom: 1rem;
+    margin-top: 4rem;
   }
 
   .hero-content p {
