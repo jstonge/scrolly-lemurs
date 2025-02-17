@@ -682,7 +682,7 @@ It is much cleaner now...
 
 We will modularize further by making our custom svelte chart as a component. I will leave it to you to remove the relevant lines from the `+page.svelte` to make it work, this time around.
 
-<details><summary>.components/Scatter.svelte</summary>
+<details><summary>./components/Scatter.svelte</summary>
 
 ```svelte
 
@@ -763,6 +763,8 @@ We will modularize further by making our custom svelte chart as a component. I w
         cursor: pointer;
     }
 </style>
+
+</details>
 
 Here's the complete script, if necessary.
 
