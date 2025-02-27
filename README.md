@@ -225,6 +225,7 @@ First, we need to add some code within the <script> tag. I'll just put all the c
     } else if (value == 2) {
       setFoo();
     }
+}
     </script>
 
 [SAME STUFF THAN BEFORE. BELOW THE LAST PLOT]
