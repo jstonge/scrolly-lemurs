@@ -234,5 +234,4 @@ Finally, I made a little SVG of our ankler fish mascotte instead of the svelte l
 +import Hero from './hero.svelte';
 </script>
 +<Hero />
-
 ```

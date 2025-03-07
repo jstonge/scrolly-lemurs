@@ -1,5 +1,5 @@
-<script lang="ts">    
-	// Pretty plot components copied from LayerCake
+<script>    
+    // Pretty plot components copied from LayerCake
     import { LayerCake, Svg} from 'layercake'; // Import the LayerCake and Svg components from LayerCake
     import ScatterLC from './components/Scatter.LC.svelte';
     import Line from './components/Line.svelte';
@@ -7,9 +7,9 @@
     import AxisXLC from './components/AxisX.LC.svelte';
     import AxisYLC from './components/AxisY.LC.svelte';
     
-    // Custom components
-    import MysteryPersonForm from './components/MysteryPersonForm.svelte';
     import Hero from './hero.svelte';
+    
+    // Custom svelte plot
     import Scatter from './components/Scatter.svelte';
     
     // Scrolly component copied from 
@@ -38,17 +38,12 @@
     let value = $state();
     
     const myNarrative = ['Original data', 'black hole!', 'MidPoint!', 'Back to Original!', 'Grade ordered by studied hours', 'Original!']
-
-    function handleSelectionChange(event: CustomEvent<{ cat: string, gender: string }>) {
-        console.log("Selection changed:", event.detail);
-    }
-
+    
     </script>
     
     <Hero />
-
-    <MysteryPersonForm onchange={(e) => handleSelectionChange(e)} />
-
+    
+    
     <h1>LayerCake!</h1>
     
     <p>Here's an example of a chart made with <a href="https://svelte.dev/">Sveltekit</a> and <a href="https://layercake.graphics/">LayerCake</a>. This is a simple scatter plot by LayerCake:</p>
@@ -97,13 +92,11 @@
         <div class="spacer"></div>
     </section>
     
-    <br>
-
+    
     <p>Then we keep going after the sticky sequence.</p>
     
-
-<style>
-
+    <style>
+        
         :global(html, body) {
             margin: 0;
             background-color: #f9f9f9; /* Light background */
@@ -112,9 +105,10 @@
     
         /* Ensures spacing between sections */
         section,
+        div,
         p {
             margin-top: 2rem; /* Adds space between elements */
-            margin-bottom: 4rem; /* Adds space between elements */
+            margin-bottom: 2rem; /* Adds space between elements */
         }
     
         h1 {
