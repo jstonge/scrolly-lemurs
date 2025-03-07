@@ -171,14 +171,9 @@ Notice that here we reuse the same `AxisX` code than in the firs plot. We also u
 
 <img width="902" alt="Screenshot 2025-02-11 at 9 47 36 AM" src="https://github.com/user-attachments/assets/771274ea-0a84-4e3b-b539-2f65423a0b7b" />
 
-
-## Scrollytelling time
-
-First, we need to add some code within the `<script>` tag. I'll just put all the code then explain it.
-
 ## Making it pretty
 
-But all of this is quite ugly. Lets make it prettier (with a little help from our friend ChatGPT or Clayde. In general, LLMs are pretty good at CSS and HTML, as these are well established technology. That say, CSS in recent years became much cooler, so it is worth to understand it at some point to use most recent features, which tend to be less clunky).
+But all of this is quite ugly. Lets make it prettier (with a little help from our friend ChatGPT or Claude. In general, LLMs are pretty good at CSS and HTML, as these are well established technology. That say, CSS in recent years became much cooler, so it is worth to understand it at some point to use most recent features, which tend to be less clunky).
 
 ```diff
 <style>
@@ -213,12 +208,12 @@ But all of this is quite ugly. Lets make it prettier (with a little help from ou
 +        display: inline-block;
 +        margin: 20px auto;
 +    }
-< /style>
+</style>
 ```
 
 ## Scrollytelling time
 
-Ok, I have to be clear, some things weren't working properly with `Tween`. I have to double check, but I think that `Tween` mutates the original data, meaning that when we make irreversible data wrangling move there is no way back to our original data. So we are going to change strategy for now, following [connorrothschild](https://github.com/connorrothschild/better-data-visualizations-with-svelte) approach to distinguish between the `renderedData` and the `initialData`. We will also update the scrolly chart to make it more compelling using, Connor's example of students' grade with respect to number of hour studied. I will diff the update file, explaining it in the comments as we go along
+It is time to make our chart reacting to scrolling. We will make a simple scatter plot, with the data being manipulated in different ways depending on where users are in the scrolling adventure. This is where the Svelte stuff really kicks in. I'll put the code and explain after
 
 ```svelte
 <script>
@@ -240,8 +235,11 @@ let innerHeight = height - padding.top - padding.bottom;
 // new data file
 import data from './data/study.csv';
 
- // Data preparation for scrolly telling, tracking the scroll of the user.
- let value = $state();
+// Data preparation for scrolly telling ---
+
+// this value variable is key. It'll contain the scroll position by way
+// of [CSS stick](https://developer.mozilla.org/en-US/docs/Web/CSS/position) property.
+let value = $state();
 
 // distinguish between state of the data
 let initialData = data;
@@ -289,7 +287,6 @@ const myNarrative = [
   'Grade ordered by studied hours', 'Original!'
 ]
 </script>
-
 
 [SAME LAYERCAKE CHART AS BEFORE]
 
