@@ -117,9 +117,10 @@
 /* Hexagon for C */
 .head-C {
     width: 50px;
-    height: 50px;
+    height: 70px;
     background-color: var(--body-color, #444);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    /* clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); */
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
 }
 
 /* Face (shifted lower inside the head) */
