@@ -1,3 +1,9 @@
+## I Need a Hero 🎵
+
+We first create a `hero.svelte` file. The code is borrowed from the [sveltekit tutorial](https://svelte.dev/tutorial/svelte/bind-this). I made the logo myself using inkscape.
+
+```
+// hero.svelte
 <script>
     import { paint } from './gradient.js';
 
@@ -87,9 +93,9 @@
         width: 60vmin;  /* Adjust as needed */
         height: 60vmin;
         background-color: #666;
-        mask: url(./ankler.svg) 50% 50% no-repeat;
+        mask: url(./test.svg) 50% 50% no-repeat;
         mask-size: 60vmin;
-        -webkit-mask: url(./ankler.svg) 50% 50% no-repeat;
+        -webkit-mask: url(./test.svg) 50% 50% no-repeat;
         -webkit-mask-size: 60vmin;
     }
 
@@ -193,4 +199,40 @@
 
 
 </style>
-  
+```
+You'll need that `gradient.js` file, showing how nicely svelte integrate javascript code:
+
+```js
+// https://svelte.dev/tutorial/svelte/bind-this
+export function paint(context, t) {
+	const { width, height } = context.canvas;
+	const imageData = context.getImageData(0, 0, width, height);
+
+	for (let p = 0; p < imageData.data.length; p += 4) {
+		const i = p / 4;
+		const x = i % width;
+		const y = (i / width) >>> 0;
+
+		const red = 64 + (128 * x) / width + 64 * Math.sin(t / 1000);
+		const green = 64 + (128 * y) / height + 64 * Math.cos(t / 1000);
+		const blue = 128;
+
+		imageData.data[p + 0] = red;
+		imageData.data[p + 1] = green;
+		imageData.data[p + 2] = blue;
+		imageData.data[p + 3] = 255;
+	}
+
+	context.putImageData(imageData, 0, 0);
+}
+```
+
+Finally, I made a little SVG of our ankler fish mascotte instead of the svelte logo from the tutorial. You can just download it on the [github](https://raw.githubusercontent.com/jstonge/scrolly-lemurs/refs/heads/main/src/routes/ankler.svg). Then, we simply add the following lines on our `+page.svelte`
+
+```diff
+<script>
++import Hero from './hero.svelte';
+</script>
++<Hero />
+
+```
