@@ -5,14 +5,14 @@
     
     // Pretty plot components copied from LayerCake
     import Scatter from '../components/Scatter.LC.svelte';
-    import Line from '../components/Line.svelte';
-    import Area from '../components/Area.svelte';
+    import Line from '../../components/Line.svelte';
+    import Area from '../../components/Area.svelte';
     import AxisX from '../components/AxisX.LC.svelte';
     import AxisY from '../components/AxisY.LC.svelte';
     
     // Scrolly component copied from 
     // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
-    import Scrolly from "../components/helpers/Scrolly.svelte";
+    import Scrolly from "../../components/helpers/Scrolly.svelte";
     
     // This example loads csv data as json using @rollup/plugin-dsv
     // But for some reason Tweening does't work with this data.

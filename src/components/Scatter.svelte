@@ -4,9 +4,7 @@
 
     import { scaleLinear } from "d3-scale";
     
-    import data from '../data/study.csv';
-
-    let { value, width, height, padding } = $props();
+    let { data, value, width, height, padding } = $props();
         
     let innerWidth = $derived(width - padding.left - padding.right);
     let innerHeight = height - padding.top - padding.bottom;

@@ -9,13 +9,14 @@
     };
 
     $: bodyColor = catColors[cat] || "#444";  // Default gray if no cat selected
+    $: isDancing = gender && cat;  // Only dance if both are selected
 </script>
 
 <div class="person-wrapper">
     {#if !gender && !cat}
         <div class="big-question">?</div>
     {:else}
-        <div class="person" style="--body-color: {bodyColor}">
+    <div class="person {isDancing ? 'dancing' : ''}" style="--body-color: {bodyColor}">
             <div class="head {gender ? `head-${gender}` : ''}">
                 <div class="face">
                     <div class="eyes">
@@ -70,6 +71,24 @@
     align-items: center;
     gap: 0;
     animation: bobbing 1.5s infinite ease-in-out;
+}
+
+/* The big dance! */
+.person.dancing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    animation: wiggle 0.5s infinite ease-in-out;
+}
+
+/* Wiggle keyframes - full-body dance */
+@keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg) translateX(-2px); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(5deg) translateX(2px); }
+    100% { transform: rotate(0deg); }
 }
 
 @keyframes bobbing {
