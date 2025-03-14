@@ -1,21 +1,33 @@
 <script lang="ts">
-    export let gender: string = "";  // "A", "B", "C"
-    export let cat: string = "";      // "Lion", "Cheetah", "Panther", etc.
-
+    // we receive from users the cat and gender
+    let { gender, cat } = $props();
+    
     const catColors = {
         "Lion": "pink",
         "Cheetah": "orange",
-        "Panther": "black"
+        "Panther": "black",
     };
 
-    $: bodyColor = catColors[cat] || "#444";  // Default gray if no cat selected
+    // If cat is a truthy value (non-empty string), isDancing will be true
+    // If cat is null, undefined, or an empty string (""), isDancing will be false
+    let isDancing = $derived.by(() => !!cat);
+
+    // Same logic. Why did we need to use $derived.by() here?
+    // let bodyColor = $derived.by(() => { 
+    //     if (cat) {
+    //         return catColors[cat];
+    //     } else {
+    //         return "#444";
+    //     };
+    // });
+    let bodyColor = $derived.by(() => catColors[cat] || "#444");
 </script>
 
 <div class="person-wrapper">
     {#if !gender && !cat}
         <div class="big-question">?</div>
     {:else}
-        <div class="person" style="--body-color: {bodyColor}">
+    <div class="person {isDancing ? 'dancing' : ''}" style="--body-color: {bodyColor}">
             <div class="head {gender ? `head-${gender}` : ''}">
                 <div class="face">
                     <div class="eyes">
@@ -70,6 +82,24 @@
     align-items: center;
     gap: 0;
     animation: bobbing 1.5s infinite ease-in-out;
+}
+
+/* The big dance! */
+.person.dancing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    animation: wiggle 0.5s infinite ease-in-out;
+}
+
+/* Wiggle keyframes - full-body dance */
+@keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg) translateX(-2px); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(5deg) translateX(2px); }
+    100% { transform: rotate(0deg); }
 }
 
 @keyframes bobbing {

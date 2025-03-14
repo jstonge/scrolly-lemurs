@@ -17,6 +17,7 @@
 		"db:studio": "drizzle-kit studio"
 	},
 	"devDependencies": {
+		"@duckdb/duckdb-wasm": "^1.29.0",
 		"@rollup/plugin-dsv": "^3.0.5",
 		"@sveltejs/adapter-vercel": "^5.5.2",
 		"@sveltejs/kit": "^2.16.0",
@@ -38,6 +39,7 @@
 		"d3-array": "^3.2.4",
 		"d3-scale": "^4.0.2",
 		"drizzle-orm": "^0.38.4",
+		"duckdb": "^1.2.0",
 		"layercake": "^8.4.2"
 	},
 	"pnpm": {

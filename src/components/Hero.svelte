@@ -1,5 +1,5 @@
 <script>
-    import { paint } from './gradient.js';
+    import { paint } from '../routes/gradient.js';
 
     let canvas;
 
