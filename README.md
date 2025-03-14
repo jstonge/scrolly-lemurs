@@ -215,9 +215,13 @@ But all of this is quite ugly. Lets make it prettier (with a little help from ou
 
 It is time to make our chart reacting to scrolling. We will make a simple scatter plot, with the data being manipulated in different ways depending on where users are in the scrolling adventure. This is where the Svelte stuff really kicks in. I'll put the code and explain after
 
+> [!TIP]
+> Actually, it is be a good place to take a break and go glimpse at Sveltekit's [Reactivity](https://svelte.dev/tutorial/svelte/state) tutorial. No need to understanding everything, just to have a vibe for what it is doing.
+
 ```svelte
 <script>
 [ STUFF LIKE BEFORE ]
+
 // $state() is a rune. This will make our plot width reactive. 
 // That is, it'll make the plot width adjusted to the user's screen width.
 // Reactivity is what makes Svelte and other front end frameworks unique.
