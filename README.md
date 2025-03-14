@@ -92,14 +92,14 @@ Lets take it step by step, shall we. I will explain key components of svelte as 
 <script>
   import { LayerCake, Svg } from 'layercake'; // Import the LayerCake and Svg components from LayerCake
   import { scaleLinear } from "d3-scale"; // d3 essentially for different scales
-  import { Tween } from 'svelte/motion'; // In-house svelte library for dealing with motions
 
   // Pretty plot components copied from LayerCake
-  import Scatter from '$components/Scatter.LC.svelte';
-  import Line  from    '$components/Line.svelte';
-  import Area  from    '$components/Area.svelte';
-  import AxisX from    '$components/AxisX.LC.svelte';
-  import AxisY from    '$components/AxisY.LC.svelte';
+  // the dollar sign here is an alias defined in the config file earlier 
+  import Scatter from  '$components/layercake/Scatter.svelte';
+  import Line  from    '$components/layercake/Line.svelte';
+  import Area  from    '$components/layercake/Area.svelte';
+  import AxisX from    '$components/layercake/AxisX.svelte';
+  import AxisY from    '$components/layercake/AxisY.svelte';
 
   // Scrolly component copied from 
   // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
