@@ -1,0 +1,3 @@
+## Wrangling data
+
+We started out with a small `csv` file, which we modify as we scroll down. What if our data logic is more complex? There are two different ways to approach the problem. The first is to work within JS. In particular, `d3` has multiple functions to help wrangling data. The other is more experimental, we can use a SQL-lite database called [Duckdb](https://duckdb.org/) which allows to read more efficient parquet (or csv) file while wrangling in a query language we all know and love. 

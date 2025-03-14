@@ -938,6 +938,12 @@ Here's the completed `+page.svelte` script, if necessary.
   - [middleschool](https://github.com/the-pudding/middleschool/tree/main/src/data): By Alvins Chang, it is a fairly recent, original scrollytelling example using Svelte5. It is worth getting inspired from it, but it is a more elaborate project.
   - [location-game](https://github.com/the-pudding/location-game/tree/main): slightly older project, but it has data wrangling the way they use to do it. I think we can improve on it.
 
+- In-house tutorial
+  - [Hero](./tutorials/hero.md)
+  - [Mystery Person](./tutorials/mystery-person.md)
+  - [Repo organization](./tutorials/repo-organization.md)
+  - [Data wranling](./tutorials/duckdb.md)
+
 ## References
 
 - [Svelte Scrollytelling Starter](https://svelte.dev/playground/81194f65fdc74601930df7974fb9ffff?version=5.19.10)
