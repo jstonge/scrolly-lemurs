@@ -29,17 +29,32 @@ pnpm install --save layercake
 pnpm install @rollup/plugin-dsv --save-dev
 pnpm install d3-scale d3-array
 ```
-- For `@rollup/plugin-dsv`, we also need to modify `vite.config.js` in the root directory:
+- For `@rollup/plugin-dsv`, we also need to modify `vite.config.ts` in the root directory. We take the opportunity to show how to create a few shortcuts that we will be end up using:
+
 ```js
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import path from "path";
 import dsv from '@rollup/plugin-dsv';
 
 export default defineConfig({
-	plugins: [sveltekit(), tailwindcss(), dsv()]
+	plugins: [sveltekit(), tailwindcss(), dsv()],
+	resolve: {
+		alias: {
+			$actions: path.resolve("./src/actions"),
+			$components: path.resolve("./src/components"),
+			$data: path.resolve("./src/data"),
+			$routes: path.resolve("./src/routes"),
+			$runes: path.resolve("./src/runes"),
+			$styles: path.resolve("./src/styles"),
+			$svg: path.resolve("./src/svg"),
+			$utils: path.resolve("./src/utils")
+		}
+	}
 });
 ```
+
 > [!TIP]
 > Keep an eye on your local server to make sure nothing gets broken as we keep going.
 - Copy the [LayerCake](https://layercake.graphics/) components we will use from the web.
