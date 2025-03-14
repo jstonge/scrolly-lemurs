@@ -1,15 +1,26 @@
 <script lang="ts">
-    export let gender: string = "";  // "A", "B", "C"
-    export let cat: string = "";      // "Lion", "Cheetah", "Panther", etc.
-
+    // we receive from users the cat and gender
+    let { gender, cat } = $props();
+    
     const catColors = {
         "Lion": "pink",
         "Cheetah": "orange",
-        "Panther": "black"
+        "Panther": "black",
     };
 
-    $: bodyColor = catColors[cat] || "#444";  // Default gray if no cat selected
-    $: isDancing = gender && cat;  // Only dance if both are selected
+    // If cat is a truthy value (non-empty string), isDancing will be true
+    // If cat is null, undefined, or an empty string (""), isDancing will be false
+    let isDancing = $derived.by(() => !!cat);
+
+    // Same logic. Why did we need to use $derived.by() here?
+    // let bodyColor = $derived.by(() => { 
+    //     if (cat) {
+    //         return catColors[cat];
+    //     } else {
+    //         return "#444";
+    //     };
+    // });
+    let bodyColor = $derived.by(() => catColors[cat] || "#444");
 </script>
 
 <div class="person-wrapper">
