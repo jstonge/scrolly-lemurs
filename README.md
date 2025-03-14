@@ -46,15 +46,15 @@ export default defineConfig({
   - For simplicity , we will copy them manually. First, we are gonna create the files we need
 ```bash 
 # Creates components/helpers and data dirs
-mkdir -p src/routes/components/helpers src/routes/data
+mkdir -p src/routes/components/helpers src/routes/data src/routes/components/layercake
 # mv to components dir
-cd src/routes/components
+cd src/routes/components/layercake
 # create the file
-touch Line.svelte Area.svelte AxisX.LC.svelte AxisY.LC.svelte Scatter.svelte
+touch Line.svelte Area.svelte AxisX.svelte AxisY.svelte Scatter.svelte
 # grab the Scrolly script from the pudding github repo
 wget https://raw.githubusercontent.com/the-pudding/svelte-starter/refs/heads/main/src/components/helpers/Scrolly.svelte -O helpers/Scrolly.svelte
 # move up one folder, then creates points.csv
-cd .. && touch data/points.csv
+cd ../.. && touch data/points.csv
 ```
 - At this point, you should have a bunch of new files in your working space. We will copy-paste two components from Layer cake:
   - [Line + area](https://layercake.graphics/example/Line). Go ahead and copy paste components into the corresponding empty files.
@@ -77,18 +77,18 @@ Lets take it step by step, shall we. I will explain key components of svelte as 
   import { Tween } from 'svelte/motion'; // In-house svelte library for dealing with motions
 
   // Pretty plot components copied from LayerCake
-  import Scatter from './components/Scatter.LC.svelte';
-  import Line  from    './components/Line.svelte';
-  import Area  from    './components/Area.svelte';
-  import AxisX from    './components/AxisX.LC.svelte';
-  import AxisY from    './components/AxisY.LC.svelte';
+  import Scatter from '$components/Scatter.LC.svelte';
+  import Line  from    '$components/Line.svelte';
+  import Area  from    '$components/Area.svelte';
+  import AxisX from    '$components/AxisX.LC.svelte';
+  import AxisY from    '$components/AxisY.LC.svelte';
 
   // Scrolly component copied from 
   // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
-	import Scrolly from "./components/helpers/Scrolly.svelte";
+	import Scrolly from "$components/helpers/Scrolly.svelte";
   
   // This example loads csv data as json using @rollup/plugin-dsv
-  import points from './data/points.csv';
+  import points from '$data/points.csv';
   
   const xKey = 'myX';
   const yKey = 'myY';
@@ -233,7 +233,7 @@ let innerWidth = $derived(width - padding.left - padding.right);
 let innerHeight = height - padding.top - padding.bottom;
 
 // new data file
-import data from './data/study.csv';
+import data from '$data/study.csv';
 
 // Data preparation for scrolly telling ---
 
@@ -462,7 +462,7 @@ By now, you should realize how scrollytelling can get messy fast. We can do the 
     
     import { scaleLinear } from "d3-scale";
     
-    import data from '../data/study.csv';
+    import data from '$data/study.csv';
 
     // Main change; you can think of $props() as the arguments
     // this file needs to run. Here we need value (the stepping),
@@ -537,10 +537,10 @@ Now, we can call that component as such:
 
 ```diff
 <script>
-- import Scatter from './components/Scatter.LC.svelte';
-+ import ScatterLC from './components/Scatter.LC.svelte';
+- import Scatter from '$components/layerchart/Scatter.LC.svelte';
++ import ScatterLC from '$components/layerchart/Scatter.LC.svelte';
 
-+ import Scatter from './components/Scatter.svelte';
++ import Scatter from '$components/Scatter.svelte';
 
 [SAME STUFF THAN BEFORE]
 
@@ -734,22 +734,22 @@ Here's the completed `+page.svelte` script, if necessary.
 <script>    
     // Pretty plot components copied from LayerCake
     import { LayerCake, Svg} from 'layercake'; // Import the LayerCake and Svg components from LayerCake
-    import ScatterLC from './components/Scatter.LC.svelte';
-    import Line from './components/Line.svelte';
-    import Area from './components/Area.svelte';
-    import AxisXLC from './components/AxisX.LC.svelte';
-    import AxisYLC from './components/AxisY.LC.svelte';
+    import ScatterLC from '$components/Scatter.LC.svelte';
+    import Line from '$components/Line.svelte';
+    import Area from '$components/Area.svelte';
+    import AxisXLC from '$components/AxisX.LC.svelte';
+    import AxisYLC from '$components/AxisY.LC.svelte';
     
     // Custom svelte plot
-    import Scatter from './components/Scatter.svelte';
+    import Scatter from '$components/Scatter.svelte';
     
     // Scrolly component copied from 
     // https://github.com/the-pudding/svelte-starter/blob/main/src/components/helpers/Scrolly.svelte
-    import Scrolly from "./components/helpers/Scrolly.svelte";
+    import Scrolly from "$components/helpers/Scrolly.svelte";
     
     // This example loads csv data as json using @rollup/plugin-dsv
     // But for some reason Tweening does't work with this data.
-    import points from './data/points.csv';
+    import points from '$data/points.csv';
     
     const xKey = 'myX';
     const yKey = 'myY';
