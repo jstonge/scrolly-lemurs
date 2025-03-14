@@ -83,6 +83,9 @@ Alriight that was a bit of work but hopefully it was painless. At some point I w
 
 ## First LayerCake chart
 
+> [!TIP]
+> Actually, if you feel like it, you can go glimpse at Sveltekit's [Introduction](https://svelte.dev/tutorial/svelte/your-first-component) tutorial. No need to understanding everything, just to have a vibe for what it is doing.
+
 Lets take it step by step, shall we. I will explain key components of svelte as we go along. You should now open the `src/routes/+page.svelte`. You should see the content that you can see on your local server. Get rid of it, and we will start by importing the libs.
 ```svelte
 // Within the script tag, we can write javascript code.
